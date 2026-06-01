@@ -2,8 +2,8 @@ from database import SessionLocal, engine
 from models import Horse, Base
 
 # Drop old table and recreate with new schema
-# Base.metadata.drop_all(bind=engine)
-# Base.metadata.create_all(bind=engine)
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
 
