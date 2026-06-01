@@ -1,7 +1,13 @@
 from fastapi import FastAPI
+from database import engine
+import models
 import uvicorn
 
 app = FastAPI()
+
+# Creates tables if they don't exist
+# Tells the session which database to talk to.
+models.Base.metadata.create_all(bind=engine)  
 
 @app.get("/")
 def read_root():
