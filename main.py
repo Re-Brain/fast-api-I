@@ -7,6 +7,8 @@ import uvicorn
 
 app = FastAPI()
 
+# Add authentication for this branch
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
