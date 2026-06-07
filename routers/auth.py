@@ -3,24 +3,21 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from database import get_db
 import models.models as models, schemas.auth as auth
-from core.auth import hash_password, verify_password, create_access_token
+from core.auth import hash_password, verify_password, create_access_token, decode_token
 
 router = APIRouter()
 
 # 1 - API Route
 # 2 - The shape of the response (schemas)
 @router.post("/register", response_model=auth.Token)
-def register(user: auth.UserCreate, db: Session = Depends(get_db)):
+def register(user: auth.VisitorRegister, db: Session = Depends(get_db)):
 
-    # Cehck if user already exists
     existing = db.query(models.User).filter(models.User.email == user.email).first()
-    
-    # If user exists, raise an error
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
-    # If not, create the user and return a token
+
     new_user = models.User(
+        name=user.name,
         email=user.email,
         hashed_password=hash_password(user.password)
     )
@@ -37,6 +34,42 @@ def register(user: auth.UserCreate, db: Session = Depends(get_db)):
 
     # token_type "bearer" = whoever holds this token is allowed in (like a concert ticket)
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/register/farmer", response_model=auth.Token)
+def register_farmer(data: auth.FarmerRegister, db: Session = Depends(get_db)):
+
+    existing = db.query(models.User).filter(models.User.email == data.email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    new_user = models.User(
+        name=data.name,
+        email=data.email,
+        hashed_password=hash_password(data.password),
+        role="farmer"
+    )
+    db.add(new_user)
+    db.flush()  # get new_user.id without committing yet
+
+    new_farm = models.Farm(
+        name=data.farm_name,
+        owner_id=new_user.id,
+        is_active=False  # Phase 1 — pending documentation
+    )
+    db.add(new_farm)
+    db.commit()
+
+    token = create_access_token({"sub": data.email})
+    return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/me", response_model=auth.UserMe)
+def me(email: str = Depends(decode_token), db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 
 @router.post("/login", response_model=auth.Token)
 def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

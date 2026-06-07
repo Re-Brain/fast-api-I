@@ -1,8 +1,38 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-class UserCreate(BaseModel):
+class VisitorRegister(BaseModel):
+    name: str
     email: str
     password: str
+
+    @field_validator("password")
+    @classmethod
+    def password_max_length(cls, v):
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 characters or fewer")
+        return v
+
+class FarmerRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+    farm_name: str
+
+    @field_validator("password")
+    @classmethod
+    def password_max_length(cls, v):
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("Password must be 72 characters or fewer")
+        return v
+
+class UserMe(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: str
+
+    class Config:
+        from_attributes = True
 
 class Token(BaseModel):
     access_token: str
