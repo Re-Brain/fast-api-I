@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 
 class HorseCreate(BaseModel):
@@ -28,6 +28,14 @@ class HorseUpdate(BaseModel):
     dams_dam: Optional[str] = None
 
 
+class HorseImageResponse(BaseModel):
+    id: int
+    image_url: str
+
+    class Config:
+        from_attributes = True
+
+
 class HorseResponse(BaseModel):
     id: int
     name: str
@@ -41,6 +49,7 @@ class HorseResponse(BaseModel):
     dams_sire: Optional[str] = None
     dams_dam: Optional[str] = None
     farm_id: int
+    images: List[HorseImageResponse] = []
 
     class Config:
         from_attributes = True

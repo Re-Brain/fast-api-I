@@ -47,6 +47,17 @@ class Horse(Base):
     sires_dam = Column(String, nullable=True)    # paternal grandmother
     dams_sire = Column(String, nullable=True)    # maternal grandfather
     dams_dam = Column(String, nullable=True)     # maternal grandmother
-
     farm_id = Column(Integer, ForeignKey("farms.id", ondelete="CASCADE"), nullable=False)
     farm = relationship("Farm", back_populates="horses")
+    images = relationship("HorseImage", back_populates="horse", cascade="all, delete-orphan")
+
+
+class HorseImage(Base):
+    __tablename__ = "horse_images"
+
+    id = Column(Integer, primary_key=True, index=True)
+    image_url = Column(String, nullable=False)
+    image_public_id = Column(String, nullable=False)
+
+    horse_id = Column(Integer, ForeignKey("horses.id", ondelete="CASCADE"), nullable=False)
+    horse = relationship("Horse", back_populates="images")
