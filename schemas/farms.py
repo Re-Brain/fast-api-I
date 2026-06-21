@@ -15,7 +15,7 @@ class FarmResponse(BaseModel):
     location: Optional[str] = None
     description: Optional[str] = None
     capacity: Optional[int] = None
-    is_active: bool
+    status: str
     owner_id: int
 
     class Config:
