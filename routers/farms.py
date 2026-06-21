@@ -38,24 +38,19 @@ def update_my_farm(
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(farm, field, value)
 
-    farm.is_active = all([
-        farm.name,
-        farm.location,
-        farm.description,
-        farm.capacity,
-    ])
+    farm.status = "active" if all([farm.location, farm.description, farm.capacity]) else "pending"
 
     db.commit()
     db.refresh(farm)
     return farm
 
 
-@router.get("/farms")
+@router.get("/farms", response_model=list[farm_schemas.FarmResponse])
 def get_all_farms(db: Session = Depends(get_db)):
-    return db.query(models.Farm).filter(models.Farm.is_active == True).all()
+    return db.query(models.Farm).filter(models.Farm.status == "active").all()
 
 
-@router.get("/farms/{farm_id}")
+@router.get("/farms/{farm_id}", response_model=farm_schemas.FarmResponse)
 def get_farm(farm_id: int, db: Session = Depends(get_db)):
     farm = db.query(models.Farm).filter(models.Farm.id == farm_id).first()
     if not farm:
