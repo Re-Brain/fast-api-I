@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text, Date
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -38,9 +38,9 @@ class Horse(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    breed = Column(String, nullable=True)
-    age = Column(Integer, nullable=True)
-    gender = Column(String, nullable=True)      # male | female | gelding
+    date_of_birth = Column(Date, nullable=True)
+    color = Column(String, nullable=True)
+    gender = Column(String, nullable=True)      # colt | stallion | gelding | filly | mare
     sire = Column(String, nullable=True)         # father
     dam = Column(String, nullable=True)          # mother
     sires_sire = Column(String, nullable=True)   # paternal grandfather
