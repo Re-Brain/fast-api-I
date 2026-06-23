@@ -49,7 +49,25 @@ class Horse(Base):
     dams_dam = Column(String, nullable=True)     # maternal grandmother
     farm_id = Column(Integer, ForeignKey("farms.id", ondelete="CASCADE"), nullable=False)
     farm = relationship("Farm", back_populates="horses")
-    images = relationship("HorseImage", back_populates="horse", cascade="all, delete-orphan")
+    images = relationship("HorseImage", back_populates="horse", cascade="all, delete-orphan", order_by="HorseImage.position")
+    race_records = relationship("RaceRecord", back_populates="horse", cascade="all, delete-orphan")
+
+
+class RaceRecord(Base):
+    __tablename__ = "race_records"
+
+    id = Column(Integer, primary_key=True, index=True)
+    race_date = Column(Date, nullable=False)
+    course = Column(String, nullable=False)
+    race_name = Column(String, nullable=False)
+    grade = Column(String, nullable=True)
+    finish_position = Column(Integer, nullable=True)
+    track = Column(String, nullable=True)
+    distance = Column(Integer, nullable=True)
+    condition = Column(String, nullable=True)
+
+    horse_id = Column(Integer, ForeignKey("horses.id", ondelete="CASCADE"), nullable=False)
+    horse = relationship("Horse", back_populates="race_records")
 
 
 class HorseImage(Base):
@@ -58,6 +76,7 @@ class HorseImage(Base):
     id = Column(Integer, primary_key=True, index=True)
     image_url = Column(String, nullable=False)
     image_public_id = Column(String, nullable=False)
+    position = Column(Integer, nullable=False, default=0)
 
     horse_id = Column(Integer, ForeignKey("horses.id", ondelete="CASCADE"), nullable=False)
     horse = relationship("Horse", back_populates="images")

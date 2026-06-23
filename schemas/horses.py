@@ -29,12 +29,55 @@ class HorseUpdate(BaseModel):
     dams_dam: Optional[str] = None
 
 
-class HorseImageResponse(BaseModel):
+class RaceRecordCreate(BaseModel):
+    race_date: date
+    course: str
+    race_name: str
+    grade: Optional[str] = None
+    finish_position: Optional[int] = None
+    track: Optional[str] = None
+    distance: Optional[int] = None
+    condition: Optional[str] = None
+
+
+class RaceRecordUpdate(BaseModel):
+    race_date: Optional[date] = None
+    course: Optional[str] = None
+    race_name: Optional[str] = None
+    grade: Optional[str] = None
+    finish_position: Optional[int] = None
+    track: Optional[str] = None
+    distance: Optional[int] = None
+    condition: Optional[str] = None
+
+
+class RaceRecordResponse(BaseModel):
     id: int
-    image_url: str
+    race_date: date
+    course: str
+    race_name: str
+    grade: Optional[str] = None
+    finish_position: Optional[int] = None
+    track: Optional[str] = None
+    distance: Optional[int] = None
+    condition: Optional[str] = None
+    horse_id: int
 
     class Config:
         from_attributes = True
+
+
+class HorseImageResponse(BaseModel):
+    id: int
+    image_url: str
+    position: int
+
+    class Config:
+        from_attributes = True
+
+
+class ImageReorderRequest(BaseModel):
+    image_ids: List[int]
 
 
 class HorseResponse(BaseModel):
@@ -51,6 +94,7 @@ class HorseResponse(BaseModel):
     dams_dam: Optional[str] = None
     farm_id: int
     images: List[HorseImageResponse] = []
+    race_records: List[RaceRecordResponse] = []
 
     class Config:
         from_attributes = True
